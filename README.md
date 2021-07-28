@@ -18,7 +18,6 @@ Please contact me via email at orentet@gmail.com.
 
 We need help implementing and testing the following importers:
 * Leumi Bank
-* Discount Bank
 * Mizrahi Bank
 * Otsar Hahayal Bank
 * Isracard
