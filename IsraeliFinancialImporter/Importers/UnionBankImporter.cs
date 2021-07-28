@@ -43,11 +43,17 @@ namespace IsraeliFinancialImporter.Importers
 
             // wait for asp.net postback
             // todo find another method wait other than waiting...
-            Thread.Sleep(TimeSpan.FromSeconds(5));
+            Thread.Sleep(TimeSpan.FromSeconds(10));
 
-            foreach (var item in _driver.FindElements(By.ClassName("printItem")))
+            // expand all memos
+            _driver.FindElement(By.Id("lnkCtlExpandAll")).Click();
+
+            var trs = _driver.FindElement(By.Id("ctlActivityTable")).FindElements(By.TagName("tr"));
+            for (var index = 0; index < trs.Count; index++)
             {
-                var columns = item.FindElements(By.TagName("td")).Select(x => x.Text.Trim()).ToArray();
+                var tr = trs[index];
+                if (!tr.GetAttribute("class").Contains("printItem")) continue;
+                var columns = tr.FindElements(By.TagName("td")).Select(x => x.Text.Trim()).ToArray();
 
                 var id = columns[3];
 
@@ -61,7 +67,13 @@ namespace IsraeliFinancialImporter.Importers
 
                 var description = columns[2];
 
+                string memo = null;
+                if (tr.FindElements(By.ClassName("additionalMinus")).Count > 0)
+                    // has memo
+                    memo = trs[index + 1].Text.Trim();
+
                 yield return new FinancialTransaction(id, occuredAt, amount, Currency.NewIsraeliShekel, description,
+                    memo,
                     true, null);
             }
         }
