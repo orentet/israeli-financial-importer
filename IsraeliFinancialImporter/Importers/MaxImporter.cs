@@ -29,15 +29,8 @@ namespace IsraeliFinancialImporter.Importers
         {
             Login();
 
+            using var client = GetHttpClientForDriver();
             var dateFormat = "yyyy-MM-dd";
-
-            var baseAddress = new Uri("https://www.max.co.il");
-            var cookieContainer = new CookieContainer();
-            using var handler = new HttpClientHandler {CookieContainer = cookieContainer};
-            using var client = new HttpClient(handler) {BaseAddress = baseAddress};
-            foreach (var cookie in _driver.Manage().Cookies.AllCookies.Where(x => x.Domain.Contains("max.co.il")))
-                cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
-
             var strResponse = client.GetStringAsync(
                     $"/api/registered/transactionDetails/getTransactionsAndGraphs?filterData={{\"userIndex\":-1,\"cardIndex\":-1,\"monthView\":false,\"date\":\"{fromInclusive.ToString(dateFormat)}\",\"dates\":{{\"startDate\":\"{fromInclusive.ToString(dateFormat)}\",\"endDate\":\"{toInclusive.ToString(dateFormat)}\"}}}}&v=V3.13-HF.6.26")
                 .Result;
@@ -56,6 +49,24 @@ namespace IsraeliFinancialImporter.Importers
                     null);
                 yield return financialTransaction;
             }
+        }
+
+        private HttpClient GetHttpClientForDriver()
+        {
+            var baseAddress = new Uri("https://www.max.co.il");
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler {CookieContainer = cookieContainer};
+            var client = new HttpClient(handler) {BaseAddress = baseAddress};
+            foreach (var cookie in _driver.Manage().Cookies.AllCookies.Where(x => x.Domain.Contains("max.co.il")))
+                try
+                {
+                    cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
+                }
+                catch (CookieException)
+                {
+                }
+
+            return client;
         }
 
         private void Login()
