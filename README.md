@@ -22,7 +22,9 @@ We need help implementing and testing the following importers:
 * Amex
 * Massad
 
+<!---
 # Nuget package
 coming soon...
 
-# Known projects using:
+# Known projects using it:
+-->
