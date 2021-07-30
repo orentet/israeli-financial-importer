@@ -2,12 +2,9 @@
 a financial institutions transactions importer written in .net core
 
 # Maintainers
-* Amit Elbaz - Union Bank, Max, Visa Cal, Beinleumi
-* Aviv Cohen - Hapoalim Bank
-* Ron Fux - Discount Bank
-* [Amit Elbaz](mailto:orentet@gmail.com?subject=[GitHub]israeli-financial-importer)
-* [Aviv Cohen](mailto:kaazz931@gmail.com?subject=[GitHub]israeli-financial-importer)
-* [Ron Fux](mailto:ronfux@pm.me?subject=[GitHub]israeli-financial-importer)
+* [Amit Elbaz](mailto:orentet@gmail.com?subject=[GitHub]israeli-financial-importer) - Union Bank, Max, Visa Cal, Beinleumi
+* [Aviv Cohen](mailto:kaazz931@gmail.com?subject=[GitHub]israeli-financial-importer) - Hapoalim Bank
+* [Ron Fux](mailto:ronfux@pm.me?subject=[GitHub]israeli-financial-importer) - Discount Bank
 
 # Contributions
 All contributions are welcome, there is a lot of work to be done!
