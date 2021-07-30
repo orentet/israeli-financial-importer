@@ -30,14 +30,16 @@ namespace IsraeliFinancialImporter.Tests
         public void BadUnionBankLogin()
         {
             var unionBankImporter = new UnionBankImporter(_driver, "", "");
-            Assert.Throws<Exception>(() => unionBankImporter.Import(_fromInclusive, _toInclusive));
+            Assert.ThrowsAny<Exception>(() =>
+                unionBankImporter.Import(_fromInclusive, _toInclusive).ToArray());
         }
 
         [Fact]
         public void BadMaxLogin()
         {
-            var unionBankImporter = new MaxImporter(_driver, "", "");
-            Assert.Throws<Exception>(() => unionBankImporter.Import(_fromInclusive, _toInclusive));
+            var maxImporter = new MaxImporter(_driver, "", "");
+            Assert.ThrowsAny<Exception>(() =>
+                maxImporter.Import(_fromInclusive, _toInclusive).ToArray());
         }
     }
 }

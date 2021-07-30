@@ -10,6 +10,7 @@ namespace IsraeliFinancialImporter.Importers
 {
     // todo: add support for multiple accounts
     // todo support installments / pending payments
+    // todo: support not cleared transactions
     public class UnionBankImporter : IFinancialImporter
     {
         private readonly IWebDriver _driver;
@@ -23,16 +24,17 @@ namespace IsraeliFinancialImporter.Importers
             _password = password;
         }
 
-        public IEnumerable<FinancialAccount> Import(DateTime fromInclusive, DateTime toInclusive)
+        public IEnumerable<FinancialTransaction> Import(DateTime fromInclusive, DateTime toInclusive)
         {
             Login();
 
             _driver.Url = "https://hb.unionbank.co.il/ebanking/Accounts/ExtendedActivity.aspx";
             var accountId = new SelectElement(_driver.FindElement(By.Id("ddlAccounts_m_ddl"))).SelectedOption.Text;
-            yield return new FinancialAccount(accountId, ScrapeTransactions(fromInclusive, toInclusive));
+            return ScrapeTransactions(accountId, fromInclusive, toInclusive);
         }
 
-        private IEnumerable<FinancialTransaction> ScrapeTransactions(DateTime fromInclusive, DateTime toInclusive)
+        private IEnumerable<FinancialTransaction> ScrapeTransactions(string accountId, DateTime fromInclusive,
+            DateTime toInclusive)
         {
             var dropDown = new SelectElement(_driver.FindElement(By.Id("ddlTransactionPeriod")));
             dropDown.SelectByValue("004");
@@ -65,16 +67,15 @@ namespace IsraeliFinancialImporter.Importers
                     ? -decimal.Parse(negativeStr)
                     : decimal.Parse(positiveStr);
 
-                var description = columns[2];
+                var payee = columns[2];
 
                 string memo = null;
                 if (tr.FindElements(By.ClassName("additionalMinus")).Count > 0)
                     // has memo
                     memo = trs[index + 1].Text.Trim();
 
-                yield return new FinancialTransaction(id, occuredAt, amount, Currency.NewIsraeliShekel, description,
-                    memo,
-                    true, null);
+                yield return new FinancialTransaction(id, accountId, occuredAt, amount, Currency.NewIsraeliShekel,
+                    payee, memo, true, null);
             }
         }
 
@@ -85,7 +86,7 @@ namespace IsraeliFinancialImporter.Importers
             _driver.FindElement(By.Id("password")).SendKeys(_password);
             _driver.FindElement(By.Id("enter")).Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
             wait.Until(drv => drv.FindElement(By.ClassName("signoff_label")));
         }
     }

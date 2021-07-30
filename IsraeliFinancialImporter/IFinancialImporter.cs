@@ -6,6 +6,6 @@ namespace IsraeliFinancialImporter
 {
     public interface IFinancialImporter
     {
-        IEnumerable<FinancialAccount> Import(DateTime fromInclusive, DateTime toInclusive);
+        IEnumerable<FinancialTransaction> Import(DateTime fromInclusive, DateTime toInclusive);
     }
 }
