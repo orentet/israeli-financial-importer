@@ -27,4 +27,6 @@ We need help implementing and testing the following importers:
 coming soon...
 
 # Known projects using it:
+* YNAB CLI importer
+* Telegram bot
 -->
