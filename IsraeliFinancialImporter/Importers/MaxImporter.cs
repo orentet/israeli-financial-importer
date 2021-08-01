@@ -35,13 +35,13 @@ namespace IsraeliFinancialImporter.Importers
                     $"/api/registered/transactionDetails/getTransactionsAndGraphs?filterData={{\"userIndex\":-1,\"cardIndex\":-1,\"monthView\":false,\"date\":\"{fromInclusive.ToString(dateFormat)}\",\"dates\":{{\"startDate\":\"{fromInclusive.ToString(dateFormat)}\",\"endDate\":\"{toInclusive.ToString(dateFormat)}\"}}}}&v=V3.13-HF.6.26")
                 .Result;
             var jsonResponse = JObject.Parse(strResponse);
-            foreach (JObject transObj in jsonResponse["result"]["transactions"])
+            foreach (var transObj in jsonResponse["result"]["transactions"])
             {
                 var dealData = transObj["dealData"];
                 var financialTransaction = new FinancialTransaction(dealData.Value<string>("refNbr"),
                     transObj.Value<string>("shortCardNumber"),
                     transObj.Value<DateTime>("purchaseDate"),
-                    transObj.Value<decimal>("actualPaymentAmount"),
+                    -transObj.Value<decimal>("actualPaymentAmount"),
                     Currency.NewIsraeliShekel,
                     transObj.Value<string>("merchantName"),
                     transObj.Value<string>("comments"),
@@ -58,13 +58,7 @@ namespace IsraeliFinancialImporter.Importers
             var handler = new HttpClientHandler {CookieContainer = cookieContainer};
             var client = new HttpClient(handler) {BaseAddress = baseAddress};
             foreach (var cookie in _driver.Manage().Cookies.AllCookies.Where(x => x.Domain.Contains("max.co.il")))
-                try
-                {
-                    cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
-                }
-                catch (CookieException)
-                {
-                }
+                cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
 
             return client;
         }

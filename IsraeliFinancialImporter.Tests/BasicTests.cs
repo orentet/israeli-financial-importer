@@ -12,7 +12,7 @@ namespace IsraeliFinancialImporter.Tests
     public class BasicTests : IDisposable
     {
         private readonly IWebDriver _driver;
-        private readonly DateTime _fromInclusive = DateTime.Today.Subtract(TimeSpan.FromDays(30));
+        private readonly DateTime _fromInclusive = DateTime.Today.AddMonths(-1);
         private readonly DateTime _toInclusive = DateTime.Today;
 
         public BasicTests()
@@ -40,6 +40,14 @@ namespace IsraeliFinancialImporter.Tests
             var maxImporter = new MaxImporter(_driver, "", "");
             Assert.ThrowsAny<Exception>(() =>
                 maxImporter.Import(_fromInclusive, _toInclusive).ToArray());
+        }
+
+        [Fact]
+        public void BadCalLogin()
+        {
+            var calImporter = new CalImporter("", "");
+            Assert.ThrowsAny<Exception>(() =>
+                calImporter.Import(_fromInclusive, _toInclusive).ToArray());
         }
     }
 }
