@@ -63,7 +63,10 @@ namespace IsraeliFinancialImporter.Importers
             var handler = new HttpClientHandler { CookieContainer = cookieContainer };
             var client = new HttpClient(handler) { BaseAddress = baseAddress };
             foreach (var cookie in _driver.Manage().Cookies.AllCookies.Where(x => x.Domain.Contains("max.co.il")))
+            {
+                if (cookie.Name == "___utmvc") continue;
                 cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
+            }
 
             return client;
         }
