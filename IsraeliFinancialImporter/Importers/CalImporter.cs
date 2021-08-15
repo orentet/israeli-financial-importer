@@ -107,7 +107,8 @@ namespace IsraeliFinancialImporter.Importers
                 password = _password,
                 recaptcha = ""
             };
-            var response = client.PostAsJsonAsync("https://connect.cal-online.co.il/col-rest/calconnect/authentication/login", request)
+            var response = client
+                .PostAsJsonAsync("https://connect.cal-online.co.il/col-rest/calconnect/authentication/login", request)
                 .Result;
             response.EnsureSuccessStatusCode();
             var jsonResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);

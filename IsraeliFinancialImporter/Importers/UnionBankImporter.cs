@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Web;
 using IsraeliFinancialImporter.Types;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 
 namespace IsraeliFinancialImporter.Importers
@@ -44,8 +46,8 @@ namespace IsraeliFinancialImporter.Importers
             var dropDown = new SelectElement(_driver.FindElement(By.Id("ddlTransactionPeriod")));
             dropDown.SelectByValue("004");
             var dateFormat = "dd/MM/yy";
-            _driver.FindElement(By.Id("dtFromDate_textBox")).SendKeys(fromInclusive.ToString(dateFormat));
-            _driver.FindElement(By.Id("dtToDate_textBox")).SendKeys(toInclusive.ToString(dateFormat));
+            SetValue(_driver.FindElement(By.Id("dtFromDate_textBox")), fromInclusive.ToString(dateFormat));
+            SetValue(_driver.FindElement(By.Id("dtToDate_textBox")), toInclusive.ToString(dateFormat));
             _driver.FindElement(By.Id("btnDisplayDates")).Click();
 
             // wait for asp.net postback
@@ -93,6 +95,12 @@ namespace IsraeliFinancialImporter.Importers
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(drv => drv.FindElements(By.TagName("app-sign-off")).FirstOrDefault());
+        }
+
+        private void SetValue(IWebElement element, string value)
+        {
+            _driver.ExecuteJavaScript(
+                $"arguments[0].setAttribute('value', '{HttpUtility.JavaScriptStringEncode(value)}')", element);
         }
     }
 }
