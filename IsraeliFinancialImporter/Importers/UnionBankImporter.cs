@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using IsraeliFinancialImporter.Types;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 
 namespace IsraeliFinancialImporter.Importers
@@ -13,13 +14,12 @@ namespace IsraeliFinancialImporter.Importers
     // todo: support not cleared transactions
     public class UnionBankImporter : IFinancialImporter
     {
-        private readonly IWebDriver _driver;
+        private readonly IWebDriver _driver = new ChromeDriver();
         private readonly string _password;
         private readonly string _username;
 
-        public UnionBankImporter(IWebDriver driver, string username, string password)
+        public UnionBankImporter(string username, string password)
         {
-            _driver = driver;
             _username = username;
             _password = password;
         }
@@ -31,6 +31,11 @@ namespace IsraeliFinancialImporter.Importers
             _driver.Url = "https://hb.unionbank.co.il/ebanking/Accounts/ExtendedActivity.aspx";
             var accountId = new SelectElement(_driver.FindElement(By.Id("ddlAccounts_m_ddl"))).SelectedOption.Text;
             return ScrapeTransactions(accountId, fromInclusive, toInclusive);
+        }
+
+        public void Dispose()
+        {
+            _driver?.Dispose();
         }
 
         private IEnumerable<FinancialTransaction> ScrapeTransactions(string accountId, DateTime fromInclusive,
@@ -45,7 +50,7 @@ namespace IsraeliFinancialImporter.Importers
 
             // wait for asp.net postback
             // todo find another method wait other than waiting...
-            Thread.Sleep(TimeSpan.FromSeconds(10));
+            Thread.Sleep(TimeSpan.FromSeconds(20));
 
             // expand all memos
             _driver.FindElement(By.Id("lnkCtlExpandAll")).Click();
@@ -86,8 +91,8 @@ namespace IsraeliFinancialImporter.Importers
             _driver.FindElement(By.Id("password")).SendKeys(_password);
             _driver.FindElement(By.Id("enter")).Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
-            wait.Until(drv => drv.FindElement(By.ClassName("signoff_label")));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+            wait.Until(drv => drv.FindElements(By.TagName("app-sign-off")).FirstOrDefault());
         }
     }
 }

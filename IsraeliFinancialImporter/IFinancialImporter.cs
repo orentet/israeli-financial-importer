@@ -4,7 +4,7 @@ using IsraeliFinancialImporter.Types;
 
 namespace IsraeliFinancialImporter
 {
-    public interface IFinancialImporter
+    public interface IFinancialImporter : IDisposable
     {
         IEnumerable<FinancialTransaction> Import(DateTime fromInclusive, DateTime toInclusive);
     }

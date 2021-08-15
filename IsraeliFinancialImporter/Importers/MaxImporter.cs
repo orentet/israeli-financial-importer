@@ -6,6 +6,7 @@ using System.Net.Http;
 using IsraeliFinancialImporter.Types;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using Cookie = System.Net.Cookie;
 
@@ -14,13 +15,12 @@ namespace IsraeliFinancialImporter.Importers
     // todo: support installments
     public class MaxImporter : IFinancialImporter
     {
-        private readonly IWebDriver _driver;
+        private readonly IWebDriver _driver = new ChromeDriver();
         private readonly string _password;
         private readonly string _username;
 
-        public MaxImporter(IWebDriver driver, string username, string password)
+        public MaxImporter(string username, string password)
         {
-            _driver = driver;
             _username = username;
             _password = password;
         }
@@ -51,12 +51,17 @@ namespace IsraeliFinancialImporter.Importers
             }
         }
 
+        public void Dispose()
+        {
+            _driver?.Dispose();
+        }
+
         private HttpClient GetHttpClientForDriver()
         {
             var baseAddress = new Uri("https://www.max.co.il");
             var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler {CookieContainer = cookieContainer};
-            var client = new HttpClient(handler) {BaseAddress = baseAddress};
+            var handler = new HttpClientHandler { CookieContainer = cookieContainer };
+            var client = new HttpClient(handler) { BaseAddress = baseAddress };
             foreach (var cookie in _driver.Manage().Cookies.AllCookies.Where(x => x.Domain.Contains("max.co.il")))
                 cookieContainer.Add(baseAddress, new Cookie(cookie.Name, cookie.Value));
 
@@ -70,7 +75,7 @@ namespace IsraeliFinancialImporter.Importers
             _driver.FindElement(By.Id("user-name")).SendKeys(_username);
             _driver.FindElement(By.Id("password")).SendKeys($"{_password}\n"); // add \n to submit form
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(drv => drv.Url == "https://www.max.co.il/homepage/personal");
         }
     }

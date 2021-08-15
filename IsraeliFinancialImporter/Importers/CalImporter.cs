@@ -30,7 +30,7 @@ namespace IsraeliFinancialImporter.Importers
             var loginToken = Login();
 
             // wait for cals systems to refresh itself...
-            Thread.Sleep(TimeSpan.FromSeconds(10));
+            Thread.Sleep(TimeSpan.FromSeconds(20));
 
             var client = CreateClient();
             client.BaseAddress = new Uri("https://cal4u.cal-online.co.il/Cal4U/");
@@ -63,6 +63,10 @@ namespace IsraeliFinancialImporter.Importers
             return results.Where(x => x.OccuredAt >= fromInclusive && x.OccuredAt <= toInclusive);
         }
 
+        public void Dispose()
+        {
+        }
+
         private IEnumerable<(string, DateTime)> GetCardDebitDates(HttpClient client, string accountId,
             DateTime fromInclusive, DateTime toInclusive)
         {
@@ -84,11 +88,11 @@ namespace IsraeliFinancialImporter.Importers
                 yield return new FinancialTransaction(transaction.Value<string>("Id"),
                     cardNumber,
                     DateTime.ParseExact(transaction.Value<string>("Date"), dateFormat, null),
-                    -transaction["Amount"].Value<decimal>("Value"),
+                    -transaction["DebitAmount"].Value<decimal>("Value"),
                     Currency.NewIsraeliShekel,
                     transaction["MerchantDetails"].Value<string>("Name"),
                     string.Join(",",
-                        new[] {transaction.Value<string>("Comments"), transaction.Value<string>("Notes")}.Where(s =>
+                        new[] { transaction.Value<string>("Comments"), transaction.Value<string>("Notes") }.Where(s =>
                             !string.IsNullOrEmpty(s))),
                     DateTime.ParseExact(transaction.Value<string>("DebitDate"), dateFormat, null) < DateTime.Now,
                     null);
@@ -101,9 +105,9 @@ namespace IsraeliFinancialImporter.Importers
             {
                 username = _username,
                 password = _password,
-                rememberMe = (bool?) null
+                recaptcha = ""
             };
-            var response = client.PostAsJsonAsync("https://connect.cal-online.co.il/api/authentication/login", request)
+            var response = client.PostAsJsonAsync("https://connect.cal-online.co.il/col-rest/calconnect/authentication/login", request)
                 .Result;
             response.EnsureSuccessStatusCode();
             var jsonResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
@@ -113,7 +117,7 @@ namespace IsraeliFinancialImporter.Importers
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("X-Site-Id", "8D37DF16-5812-4ACD-BAE7-CD1A5BFA2206");
+            client.DefaultRequestHeaders.Add("X-Site-Id", "05D905EB-810A-4680-9B23-1A2AC46533BF");
             return client;
         }
     }
