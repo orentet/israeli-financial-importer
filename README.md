@@ -10,7 +10,7 @@ All contributions are welcome, there is a lot of work to be done!
 
 All contributions will be credited.
 
-Please contact me via email at orentet@gmail.com or join us at the telegram group: https://t.me/joinchat/2K7E5ihTHNhmODM0
+Please contact me via email at amit@elbaz.family or join us at the telegram group: https://t.me/joinchat/2K7E5ihTHNhmODM0
 
 We need help implementing and testing the following importers:
 * Leumi Bank
@@ -19,6 +19,7 @@ We need help implementing and testing the following importers:
 * Isracard
 * Amex
 * Massad
+* Discount Bank
 
 <!---
 # Nuget package
