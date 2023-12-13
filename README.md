@@ -3,9 +3,7 @@ Israeli financial institutions transactions importer written in .net core
 Each importer/scraper is continuously maintained by a dedicated developer.
 
 # Maintainers
-* [Amit Elbaz](mailto:amit@elbaz.family?subject=[GitHub]israeli-financial-importer) - Union Bank, Max, Visa Cal, Beinleumi, Discount Bank
-* [Aviv Cohen](mailto:kaazz931@gmail.com?subject=[GitHub]israeli-financial-importer) - Hapoalim Bank
-* [Ron Fux](mailto:ronfux@pm.me?subject=[GitHub]israeli-financial-importer) - Discount Bank
+* [Amit Elbaz](mailto:amit@elbaz.family?subject=[GitHub]israeli-financial-importer) - Union Bank, Max, Visa Cal, Beinleumi, Discount Bank, Hapoalim Bank
 
 # Contributions
 All contributions are welcome, there is a lot of work to be done!
